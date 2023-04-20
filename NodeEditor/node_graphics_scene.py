@@ -24,8 +24,14 @@ class QDMGraphicsScene(QGraphicsScene):
 
         self.setBackgroundBrush(self._color_background)
 
+        self.selectionChanged.connect(self.onSelectionChanged) 
+
     def setGrScene(self, width, height):
         self.setSceneRect(-width // 2, -height // 2, width, height)
+
+    def onSelectionChanged(self):
+        view = self.views()[0]
+        print('Selection changed')
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         super().drawBackground(painter, rect)

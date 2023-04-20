@@ -4,6 +4,8 @@ from node_serializable import Serializable
 from node_graphics_scene import QDMGraphicsScene
 from node_node import Node
 from node_edge import Edge
+from node_scene_history import SceneHistory
+
 
 class Scene(Serializable):
     def __init__(self):
@@ -15,6 +17,7 @@ class Scene(Serializable):
         self.scene_height = 32000
 
         self.init_UI()
+        self.history = SceneHistory(self)
 
     def init_UI(self):
         self.grScene = QDMGraphicsScene(self)
