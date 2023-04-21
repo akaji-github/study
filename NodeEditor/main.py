@@ -6,6 +6,6 @@ from node_editor_window import NodeEditorWindow
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     
-    wnd = NodeEditorWindow(window_width=1600, window_height=900)
+    wnd = NodeEditorWindow(width=800, height=600)
     
     sys.exit(app.exec_())

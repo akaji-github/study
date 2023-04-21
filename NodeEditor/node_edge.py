@@ -100,7 +100,12 @@ class Edge(Serializable):
         self.scene.grScene.removeItem(self.grEdge)
         self.grEdge = None
         if DEBUG: print(' - remove edge from scene')
-        self.scene.removeEdge(self)
+        try:
+            self.scene.removeEdge(self)
+        except ValueError:
+            pass
+        except Exception as e:
+            print('EXCEPTION:', e, type(e))
         if DEBUG: print(' - everything is done.')
     
     def serialize(self):

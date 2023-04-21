@@ -3,6 +3,7 @@ from node_serializable import Serializable
 
 from PyQt5.QtWidgets import *
 
+
 class QDMNodeContentWidget(QWidget, Serializable):
     def __init__(self, node, parent=None):
         self.node = node

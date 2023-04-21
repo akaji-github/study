@@ -15,6 +15,8 @@ MODE_EDGE_DRAG = 2
 EDGE_DRAG_START_THRESHOLD = 10
 
 class QDMGraphicsView(QGraphicsView):
+    scenePosChanged = pyqtSignal(int, int)
+
     def __init__(self, grScene, parent=None):
         super().__init__(parent)
         self.grScene = grScene
@@ -42,6 +44,8 @@ class QDMGraphicsView(QGraphicsView):
 
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setDragMode(QGraphicsView.RubberBandDrag)
+
+        self.grScene.scene.history.storeHistory("Initialize")
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MiddleButton:
@@ -130,6 +134,9 @@ class QDMGraphicsView(QGraphicsView):
                 res = self.edgeDragEnd(item)
                 if res: return res 
 
+        if self.dragMode() == QGraphicsView.RubberBandDrag:
+            self.grScene.scene.history.storeHistory("Selection changed")
+
         super().mouseReleaseEvent(event)
 
     def rightMouseBottonPress(self, event):
@@ -163,6 +170,13 @@ class QDMGraphicsView(QGraphicsView):
             self.dragEdge.grEdge.setDestination(pos.x(), pos.y())
             self.dragEdge.grEdge.update()
 
+
+        self.last_scene_mouse_position = self.mapToScene(event.pos())
+
+        self.scenePosChanged.emit(
+            int(self.last_scene_mouse_position.x()),
+            int(self.last_scene_mouse_position.y())
+        )
         super().mouseMoveEvent(event)
 
     def debug_modifiers(self, event):
@@ -240,27 +254,26 @@ class QDMGraphicsView(QGraphicsView):
             self.scale(zoomFactor, zoomFactor)
         
     def keyPressEvent(self, event: QKeyEvent) -> None:
-        if event.key() == Qt.Key_Delete:
-            if not self.editingFlag:
-                self.deleteSelected()
-            else:
-                super().keyPressEvent(event)
-
-        elif event.key() == Qt.Key_S and event.modifiers() & Qt.ControlModifier:
-            self.grScene.scene.saveToFile('graph.json.txt')
-        elif event.key() == Qt.Key_L and event.modifiers() & Qt.ControlModifier:
-            self.grScene.scene.loadFromFile('graph.json.txt')
+        # if event.key() == Qt.Key_Delete:
+        #     if not self.editingFlag:
+        #         self.deleteSelected()
+        #     else:
+        #         super().keyPressEvent(event)
+        # elif event.key() == Qt.Key_S and event.modifiers() & Qt.ControlModifier:
+        #     self.grScene.scene.saveToFile('graph.json.txt')
+        # elif event.key() == Qt.Key_L and event.modifiers() & Qt.ControlModifier:
+        #     self.grScene.scene.loadFromFile('graph.json.txt')
         # elif event.key() == Qt.Key_1:
         #     self.grScene.scene.history.storeHistory("Item A")
         # elif event.key() == Qt.Key_2:
         #     self.grScene.scene.history.storeHistory("Item B")
         # elif event.key() == Qt.Key_3:
         #     self.grScene.scene.history.storeHistory("Item C")
-        elif event.key() == Qt.Key_Z and event.modifiers() & Qt.ControlModifier and not event.modifiers() & Qt.ShiftModifier:
-            self.grScene.scene.history.undo()
-        elif event.key() == Qt.Key_Z and event.modifiers() & Qt.ControlModifier:
-            self.grScene.scene.history.redo()
-        elif event.key() == Qt.Key_H:
+        # elif event.key() == Qt.Key_Z and event.modifiers() & Qt.ControlModifier and not event.modifiers() & Qt.ShiftModifier:
+        #     self.grScene.scene.history.undo()
+        # elif event.key() == Qt.Key_Z and event.modifiers() & Qt.ControlModifier:
+            # self.grScene.scene.history.redo()
+        if event.key() == Qt.Key_H:
             print('HISTORY:     len(%d)' % len(self.grScene.scene.history.history_stack),
                   ' -- current_step', self.grScene.scene.history.history_current_step)
             ix = 0
