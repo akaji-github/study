@@ -42,7 +42,7 @@ class Scene(Serializable):
 
     def saveToFile(self, filename):
         with open(filename, "w") as file:
-            json.dump(self.serialize(), indent=4)
+            json.dump(self.serialize(), file,indent=4)
         print('saveing to', filename, 'was successfull.')
 
     def loadFromFile(self, filename):
